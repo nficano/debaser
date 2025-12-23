@@ -22,6 +22,14 @@ This project is distributed via:
   - `https://<owner>.github.io/<repo>/public.gpg`
 - Uploads all artifacts to the GitHub Release
 
+### GitHub Pages setup
+
+The signed APT/RPM repositories are published to the `gh-pages` branch. Enable GitHub Pages for this repo:
+
+1. Repo Settings → Pages
+2. Source: Deploy from a branch
+3. Branch: `gh-pages` / `root`
+
 ## Signing key (local)
 
 Keys and other sensitive release material live outside git in:
@@ -49,6 +57,26 @@ Commands (macOS):
 base64 -i ~/Desktop/release-secrets/private.gpg | pbcopy
 pbcopy < ~/Desktop/release-secrets/gpg-passphrase.txt
 ```
+
+## crates.io publishing
+
+Before the first publish, verify metadata:
+
+```sh
+cargo package --allow-dirty
+cargo publish --dry-run
+```
+
+Then publish:
+
+```sh
+cargo publish
+```
+
+Optional CI automation:
+
+- Add `CRATES_IO_TOKEN` as a GitHub Secret.
+- The release workflow will run `cargo publish` on tag `v*`.
 
 ## Building packages locally
 
@@ -144,4 +172,3 @@ Open a PR to `microsoft/winget-pkgs` adding the generated `out/manifests/...` di
 1. Generate a new signing key in `~/Desktop/release-secrets/` and update the GitHub Secrets.
 2. Publish the new `public.gpg` to `gh-pages` (next release does this automatically).
 3. In docs, keep the old key available for verifying historical releases.
-
