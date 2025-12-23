@@ -122,17 +122,42 @@ jobs:
       - name: Import GPG signing key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        shell: bash
         run: |
           set -euo pipefail
-          if [[ -z "${GPG_PRIVATE_KEY}" ]]; then
+          if [[ -z "${GPG_PRIVATE_KEY:-}" ]]; then
             echo "Missing GPG_PRIVATE_KEY secret" >&2
             exit 1
           fi
-          if [[ "${GPG_PRIVATE_KEY}" == *"BEGIN PGP PRIVATE KEY BLOCK"* ]]; then
-            printf '%s' "${GPG_PRIVATE_KEY}" | gpg --batch --import
-          else
-            printf '%s' "${GPG_PRIVATE_KEY}" | base64 --decode | gpg --batch --import
-          fi
+
+          python3 - <<'PY' | gpg --batch --import
+          import base64
+          import os
+          import re
+          import sys
+
+          key = os.environ.get("GPG_PRIVATE_KEY", "")
+          if not key.strip():
+              print("Missing GPG_PRIVATE_KEY secret", file=sys.stderr)
+              sys.exit(1)
+
+          key = key.replace("\r", "")
+          if "BEGIN PGP PRIVATE KEY BLOCK" in key:
+              sys.stdout.write(key)
+              sys.exit(0)
+
+          b64 = key.strip()
+          b64 = b64.replace("\\n", "").replace("\\r", "")
+          b64 = re.sub(r"\s+", "", b64)
+          b64 += "=" * (-len(b64) % 4)
+
+          try:
+              sys.stdout.buffer.write(base64.b64decode(b64, validate=False))
+          except Exception as exc:
+              print(f"Failed to decode GPG_PRIVATE_KEY as base64: {exc}", file=sys.stderr)
+              sys.exit(1)
+          PY
+
           gpg --list-secret-keys --keyid-format LONG
 
       - name: Resolve GPG key id
@@ -265,17 +290,41 @@ jobs:
       - name: Import GPG signing key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        shell: bash
         run: |
           set -euo pipefail
-          if [[ -z "${GPG_PRIVATE_KEY}" ]]; then
+          if [[ -z "${GPG_PRIVATE_KEY:-}" ]]; then
             echo "Missing GPG_PRIVATE_KEY secret" >&2
             exit 1
           fi
-          if [[ "${GPG_PRIVATE_KEY}" == *"BEGIN PGP PRIVATE KEY BLOCK"* ]]; then
-            printf '%s' "${GPG_PRIVATE_KEY}" | gpg --batch --import
-          else
-            printf '%s' "${GPG_PRIVATE_KEY}" | base64 --decode | gpg --batch --import
-          fi
+
+          python3 - <<'PY' | gpg --batch --import
+          import base64
+          import os
+          import re
+          import sys
+
+          key = os.environ.get("GPG_PRIVATE_KEY", "")
+          if not key.strip():
+              print("Missing GPG_PRIVATE_KEY secret", file=sys.stderr)
+              sys.exit(1)
+
+          key = key.replace("\r", "")
+          if "BEGIN PGP PRIVATE KEY BLOCK" in key:
+              sys.stdout.write(key)
+              sys.exit(0)
+
+          b64 = key.strip()
+          b64 = b64.replace("\\n", "").replace("\\r", "")
+          b64 = re.sub(r"\s+", "", b64)
+          b64 += "=" * (-len(b64) % 4)
+
+          try:
+              sys.stdout.buffer.write(base64.b64decode(b64, validate=False))
+          except Exception as exc:
+              print(f"Failed to decode GPG_PRIVATE_KEY as base64: {exc}", file=sys.stderr)
+              sys.exit(1)
+          PY
 
       - name: Generate checksums
         shell: bash
