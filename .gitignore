@@ -1,1 +1,6 @@
 target
+dist
+out
+winget-out
+gh-pages
+gh-pages-content

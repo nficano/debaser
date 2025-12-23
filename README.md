@@ -129,7 +129,18 @@ Releases are cut via the `Makefile` and published via GitHub Actions (with gener
 make release
 ```
 
-This tags `v<version>` from `Cargo.toml` and pushes it.
+This bumps the `Cargo.toml` version (patch by default), tags `v<version>`, and pushes it.
+
+Options:
+
+```sh
+# bump minor/major instead of patch
+make release BUMP=minor
+make release BUMP=major
+
+# or set an explicit version
+make release VERSION=1.2.3
+```
 
 This will:
 

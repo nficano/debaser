@@ -1,19 +1,28 @@
 build:
-	cargo build --release
+	cargo build --release --locked
 
 install:
-	cargo install --path .
+	cargo install --path . --locked
 
 clean:
 	cargo clean
 
+BUMP ?= patch
+VERSION ?=
+
 release:
 	@set -euo pipefail; \
-	VERSION=$$(cargo metadata --no-deps --format-version=1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["packages"][0]["version"])'); \
-	TAG_NAME="v$$VERSION"; \
+	if [[ -n "$(VERSION)" ]]; then \
+		NEW_VERSION="$(VERSION)"; \
+		python3 scripts/release/bump-version.py --set "$$NEW_VERSION" >/dev/null; \
+	else \
+		NEW_VERSION=$$(python3 scripts/release/bump-version.py --bump "$(BUMP)"); \
+	fi; \
+	cargo generate-lockfile; \
+	TAG_NAME="v$$NEW_VERSION"; \
 	echo "Generating release name..."; \
 	RELEASE_NAME=$$(cargo run --quiet --release --); \
-	echo "Version: $$VERSION"; \
+	echo "Version: $$NEW_VERSION"; \
 	echo "Tag: $$TAG_NAME"; \
 	echo "Release name: $$RELEASE_NAME"; \
 	git add -A; \
