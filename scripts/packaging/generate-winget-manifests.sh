@@ -71,7 +71,7 @@ fi
 
 sha_for() {
   local filename="$1"
-  awk -v f="$filename" '{gsub(/^\\.\\//,"",$2); if ($2==f) {print $1; exit}}' "${sha256sums}"
+  awk -v f="$filename" '{gsub(/^\.\//,"",$2); if ($2==f) {print $1; exit}}' "${sha256sums}"
 }
 
 zip_name="debaser-v${version}-x86_64-pc-windows-msvc.zip"
