@@ -1,10 +1,9 @@
-<p></p>
-<picture style="display: flex; align-items: center; justify-content: center">
-  <source srcset="artwork/debaser-dark@2x.png" media="(prefers-color-scheme: dark)">
-  <center>
-  <img src="artwork/debaser-light@2x.png" alt="debaser logo" width="100" height="100" style="margin-bottom: 30px; margin-top: 10px">
-  </center>
-</picture>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="artwork/debaser-dark@2x.png" />
+    <img src="artwork/debaser-light@2x.png" alt="Debaser" width="100" height="100" />
+  </picture>
+</p>
 
 ### Deterministic release name generator.
 
