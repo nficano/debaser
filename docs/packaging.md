@@ -141,6 +141,8 @@ export GPG_PASSPHRASE="$(cat ~/Desktop/release-secrets/gpg-passphrase.txt)"
 
 ## Publishing Homebrew formula
 
+Each GitHub Release includes a generated `debaser.rb` formula asset (built from `SHA256SUMS`).
+
 Generate a formula from a released `SHA256SUMS`:
 
 ```sh
@@ -154,6 +156,8 @@ Generate a formula from a released `SHA256SUMS`:
 Commit `Formula/debaser.rb` to your tap repository.
 
 ## Publishing winget manifests
+
+Each GitHub Release includes a `winget-manifests-v*.zip` asset (built from `SHA256SUMS`).
 
 Generate manifests from a released `SHA256SUMS`:
 

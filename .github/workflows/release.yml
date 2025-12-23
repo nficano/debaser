@@ -292,6 +292,27 @@ jobs:
           fi
           gpg "${gpg_args[@]}" -u "$key_id" --output SHA256SUMS.sig SHA256SUMS
 
+      - name: Generate Homebrew formula + winget manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+
+          ./scripts/packaging/generate-homebrew-formula.sh \
+            --version "${version}" \
+            --sha256sums dist/SHA256SUMS \
+            --repo "${GITHUB_REPOSITORY}" \
+            --output dist/debaser.rb
+
+          rm -rf winget-out
+          ./scripts/packaging/generate-winget-manifests.sh \
+            --version "${version}" \
+            --sha256sums dist/SHA256SUMS \
+            --repo "${GITHUB_REPOSITORY}" \
+            --output-dir winget-out
+
+          (cd winget-out && zip -r "../dist/winget-manifests-${GITHUB_REF_NAME}.zip" manifests)
+
       - name: Create GitHub Release (if missing)
         env:
           GH_TOKEN: ${{ github.token }}
