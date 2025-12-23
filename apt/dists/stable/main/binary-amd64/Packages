@@ -1,0 +1,190 @@
+Package: debaser
+Version: 0.1.11-1
+Architecture: amd64
+Homepage: https://github.com/nficano/debaser
+Maintainer: Nick Ficano <nficano@gmail.com>
+Installed-Size: 993
+Depends: libc6 (>= 2.39)
+Priority: optional
+Section: utils
+Filename: pool/main/d/debaser/debaser_0.1.11-1_amd64.deb
+Size: 344488
+SHA256: 389c6e9ed68b8eacb59a0acb942697fa072a23b66105a18e787dce3b483747f4
+SHA1: 2de798d3b1872f1ea02f7a7a156fb80c08e0b062
+MD5sum: 662392b79e5b084f2a126002d341bde2
+Description: Deterministic release name generator
+ <p align="center">
+   <picture>
+     <source media="(prefers-color-scheme: dark)"
+ srcset="artwork/debaser-light@2x.png" />
+     <img src="artwork/debaser-dark@2x.png" alt="Debaser" width="150"
+ height="150" />
+   </picture>
+ </p>
+ <br />
+ .
+ ### Deterministic release name generator.
+ .
+ `debaser` turns a git SHA (or any hex-ish checksum) into a friendly,
+ alliterative
+ `adjective-noun` release name (for example: `loony-lionfish`).
+ .
+ ## Install
+ .
+ ### macOS (Homebrew)
+ .
+ Via tap (recommended):
+ .
+ ```sh
+ brew tap nficano/tap
+ brew install debaser
+ ```
+ .
+ ### Debian/Ubuntu (apt)
+ .
+ ```sh
+ curl -fsSL https://nficano.github.io/debaser/public.gpg | gpg --dearmor | sudo
+ tee /usr/share/keyrings/debaser-archive-keyring.gpg >/dev/null
+ echo "deb [signed-by=/usr/share/keyrings/debaser-archive-keyring.gpg]
+ https://nficano.github.io/debaser/apt stable main" | sudo tee
+ /etc/apt/sources.list.d/debaser.list >/dev/null
+ sudo apt update
+ sudo apt install debaser
+ ```
+ .
+ ### RHEL/Fedora (dnf)
+ .
+ ```sh
+ sudo tee /etc/yum.repos.d/debaser.repo >/dev/null <<'EOF'
+ [debaser]
+ name=debaser
+ baseurl=https://nficano.github.io/debaser/rpm
+ enabled=1
+ repo_gpgcheck=1
+ gpgcheck=0
+ gpgkey=https://nficano.github.io/debaser/public.gpg
+ EOF
+ .
+ sudo dnf install debaser
+ ```
+ .
+ ### Rust (cargo)
+ .
+ From crates.io (once published):
+ .
+ ```sh
+ cargo install debaser --locked
+ ```
+ .
+ From source:
+ .
+ ```sh
+ cargo install --path .
+ ```
+ .
+ ### Manual download (tar.gz / zip)
+ .
+ Download a release asset from GitHub Releases, verify `SHA256SUMS` +
+ `SHA256SUMS.sig`, then extract and place `debaser` on your `PATH`.
+ .
+ ### GitHub Actions
+ .
+ Fastest option (uses a prebuilt GitHub Release asset):
+ .
+ ```yaml
+ - name: Install debaser
+   shell: bash
+   run: |
+     set -euo pipefail
+     repo="nficano/debaser"
+     version="$(curl -fsSL
+ "https://api.github.com/repos/${repo}/releases/latest" | python3 -c 'import
+ json,sys; print(json.load(sys.stdin)["tag_name"])')"
+     target="x86_64-unknown-linux-gnu"
+     asset="debaser-${version}-${target}.tar.gz"
+     base="https://github.com/${repo}/releases/download/${version}"
+     curl -fsSL "$base/$asset" -o "$asset"
+     tar -xzf "$asset"
+     sudo install -m 0755 "debaser-${version}-${target}/debaser"
+ /usr/local/bin/debaser
+     debaser --checksum abcd
+ ```
+ .
+ ## Usage
+ .
+ Inside a git repo, `debaser` uses `git rev-parse HEAD` as the input:
+ .
+ ```sh
+ debaser
+ ```
+ .
+ Or provide an explicit checksum:
+ .
+ ```sh
+ debaser --checksum abcd
+ # loony-lionfish
+ ```
+ .
+ ## Library usage
+ .
+ Add as a dependency (via a path, git, or a published version):
+ .
+ ```toml
+ debaser = { path = "../debaser" }
+ ```
+ .
+ Generate names directly:
+ .
+ ```rust
+ let name = debaser::generate_from_checksum(Some("abcd"))?;
+ assert_eq!(name, "loony-lionfish");
+ ```
+ .
+ ## How it works
+ .
+ - Keeps only hexadecimal characters from the input and uses the first 4 as a
+ seed.
+ - The first byte selects an adjective; the second selects a noun.
+ - Nouns are biased to start with the same letter as the adjective.
+ .
+ ## Release notes
+ .
+ Releases are cut via the `Makefile` and published via GitHub Actions (with
+ generated notes and attached binaries / packages / repos).
+ .
+ ```sh
+ make release
+ ```
+ .
+ This bumps the `Cargo.toml` version (patch by default), tags `v<version>`, and
+ pushes it.
+ .
+ Options:
+ .
+ ```sh
+ # bump minor/major instead of patch
+ make release BUMP=minor
+ make release BUMP=major
+ .
+ # or set an explicit version
+ make release VERSION=1.2.3
+ ```
+ .
+ This will:
+ .
+ - Generate a human-friendly release name by running `debaser`
+ - Commit any staged/working changes with `Release v<version> (<name>)` (no-op
+ if there’s nothing to commit)
+ - Create an annotated git tag (`v<version>`) and push `main` + the tag to
+ GitHub
+ .
+ ## Development
+ .
+ ```sh
+ cargo test
+ ```
+ .
+ ## Packaging
+ .
+ See `docs/packaging.md` for full packaging + publishing details.
+

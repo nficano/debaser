@@ -1,0 +1,6 @@
+Archive: stable
+Component: main
+Origin: debaser
+Label: debaser
+Architecture: amd64
+Description: debaser APT repository

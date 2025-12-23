@@ -1,0 +1,7 @@
+[debaser]
+name=debaser
+baseurl=https://nficano.github.io/debaser/rpm
+enabled=1
+repo_gpgcheck=1
+gpgcheck=0
+gpgkey=https://nficano.github.io/debaser/public.gpg

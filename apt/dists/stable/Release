@@ -1,0 +1,20 @@
+Origin: debaser
+Label: debaser
+Suite: stable
+Codename: stable
+Date: Tue, 23 Dec 2025 20:04:05 UTC
+Architectures: amd64
+Components: main
+Description: debaser APT repository
+MD5Sum:
+ ce3c934c079488618385bab17e98765a 4418 main/binary-amd64/Packages
+ 6581f62c619c097d450333760b33adf8 2127 main/binary-amd64/Packages.gz
+ d318683f1d9aa4b9f09d048a523e8fd8 119 main/binary-amd64/Release
+SHA1:
+ 72a0200b866c73acaeaaa0c6f5eb17cb10ef7f9a 4418 main/binary-amd64/Packages
+ df596ccea6dd2082f711c486482de0efcbf364f0 2127 main/binary-amd64/Packages.gz
+ 7557171c3544cf7d8423ac58bd89367afa716b7d 119 main/binary-amd64/Release
+SHA256:
+ f1338d4e42ec3a34c423f2bdb1e0b5e21117cf555fc27b435dcb72edc6080f37 4418 main/binary-amd64/Packages
+ d15ca5eb98ec0c335830cf23c66a4aaf748f74f8133a20e37142765131291ad0 2127 main/binary-amd64/Packages.gz
+ 53e8be78e28ccaad6b5d4dca27cf283c02aa01c3145bffedf389d51156157c9f 119 main/binary-amd64/Release

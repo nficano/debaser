@@ -1,0 +1,5 @@
+Types: deb
+URIs: https://nficano.github.io/debaser/apt
+Suites: stable
+Components: main
+Signed-By: /usr/share/keyrings/debaser-archive-keyring.gpg
