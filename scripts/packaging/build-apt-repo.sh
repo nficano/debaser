@@ -90,7 +90,6 @@ Suite: ${codename}
 Components: main
 Architectures: ${architectures}
 Description: debaser APT repository
-SignWith: no
 EOF
 
 for deb in "${deb_files[@]}"; do
