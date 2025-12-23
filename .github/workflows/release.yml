@@ -131,7 +131,7 @@ jobs:
             echo "Missing GPG_PRIVATE_KEY secret" >&2
             exit 1
           fi
-          echo "${GPG_PRIVATE_KEY}" | gpg --batch --import
+          printf '%s' "${GPG_PRIVATE_KEY}" | base64 --decode | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
 
       - name: Resolve GPG key id
@@ -240,7 +240,7 @@ jobs:
             echo "Missing GPG_PRIVATE_KEY secret" >&2
             exit 1
           fi
-          echo "${GPG_PRIVATE_KEY}" | gpg --batch --import
+          printf '%s' "${GPG_PRIVATE_KEY}" | base64 --decode | gpg --batch --import
 
       - name: Generate checksums
         shell: bash
