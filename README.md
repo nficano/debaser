@@ -1,4 +1,4 @@
-<p>
+<p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="artwork/debaser-light@2x.png" />
     <img src="artwork/debaser-dark@2x.png" alt="Debaser" width="150" height="150" />
