@@ -3,7 +3,7 @@
   <img src="artwork/debaser-light@2x.png" alt="debaser logo" width="100" height="100" style="margin-bottom: 30px; margin-top: 10px">
 </picture>
 
-## Deterministic release name generator.
+### Deterministic release name generator.
 
 `debaser` turns a git SHA (or any hex-ish checksum) into a friendly, alliterative
 `adjective-noun` release name (for example: `loony-lionfish`).
