@@ -3,6 +3,33 @@ name = "debaser"
 version = "0.1.0"
 edition = "2021"
 description = "Deterministic release name generator"
+license = "Unlicense"
+readme = "README.md"
+repository = "https://github.com/nficano/debaser"
+homepage = "https://github.com/nficano/debaser"
+keywords = ["release", "naming", "cli", "git"]
+categories = ["command-line-utilities", "development-tools"]
+rust-version = "1.74"
+
+[package.metadata.deb]
+maintainer = "Nick Ficano <nficano@gmail.com>"
+copyright = "Nick Ficano"
+depends = "$auto"
+section = "utils"
+priority = "optional"
+assets = [
+  ["target/release/debaser", "usr/bin/debaser", "755"],
+  ["README.md", "usr/share/doc/debaser/README.md", "644"],
+  ["LICENSE", "usr/share/doc/debaser/LICENSE", "644"],
+]
+
+[package.metadata.generate-rpm]
+summary = "Deterministic release name generator"
+assets = [
+  { source = "target/release/debaser", dest = "/usr/bin/debaser", mode = "755" },
+  { source = "README.md", dest = "/usr/share/doc/debaser/README.md", mode = "644" },
+  { source = "LICENSE", dest = "/usr/share/licenses/debaser/LICENSE", mode = "644" },
+]
 
 [dependencies]
 anyhow = "1"

@@ -1,9 +1,10 @@
-<p align="center">
+<p>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="artwork/debaser-dark@2x.png" />
-    <img src="artwork/debaser-light@2x.png" alt="Debaser" width="100" height="100" />
+    <source media="(prefers-color-scheme: dark)" srcset="artwork/debaser-light@2x.png" />
+    <img src="artwork/debaser-dark@2x.png" alt="Debaser" width="150" height="150" />
   </picture>
 </p>
+<br />
 
 ### Deterministic release name generator.
 
