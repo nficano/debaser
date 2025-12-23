@@ -48,7 +48,7 @@ Generated files:
 
 Add these repo secrets:
 
-- `GPG_PRIVATE_KEY`: base64 of `~/Desktop/release-secrets/private.gpg`
+- `GPG_PRIVATE_KEY`: either the raw contents of `~/Desktop/release-secrets/private.gpg` (armored) or base64 of that file
 - `GPG_PASSPHRASE`: contents of `~/Desktop/release-secrets/gpg-passphrase.txt`
 
 Commands (macOS):
