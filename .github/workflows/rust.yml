@@ -30,7 +30,7 @@ jobs:
             --generate-notes
 
   build_and_upload:
-    name: Build and upload (${{ matrix.target }})
+    name: Build and upload (${{ matrix.name }})
     needs: create_release
     runs-on: ${{ matrix.os }}
     strategy:
