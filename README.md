@@ -1,6 +1,9 @@
+<p></p>
 <picture style="display: flex; align-items: center; justify-content: center">
   <source srcset="artwork/debaser-dark@2x.png" media="(prefers-color-scheme: dark)">
+  <center>
   <img src="artwork/debaser-light@2x.png" alt="debaser logo" width="100" height="100" style="margin-bottom: 30px; margin-top: 10px">
+  </center>
 </picture>
 
 ### Deterministic release name generator.
@@ -51,6 +54,22 @@ assert_eq!(name, "loony-lionfish");
 - Keeps only hexadecimal characters from the input and uses the first 4 as a seed.
 - The first byte selects an adjective; the second selects a noun.
 - Nouns are biased to start with the same letter as the adjective.
+
+## Release notes
+
+Releases are cut via the `Makefile` and published as downloadable GitHub Releases (with generated notes and attached binaries).
+
+```sh
+make release
+```
+
+Requires `debaser` on your `PATH` (run `make install` first).
+
+This will:
+
+- Generate a release tag name by running `debaser`
+- Commit any staged/working changes with `Release <tag>` (no-op if there’s nothing to commit)
+- Create an annotated git tag and push `main` + the tag to GitHub
 
 ## Development
 
