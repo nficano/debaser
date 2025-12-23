@@ -313,8 +313,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          pkg_root=""
+          for candidate in dist-packages/dist dist-packages dist-packages/dist/dist; do
+            if [[ -d "${candidate}" ]] && ([[ -d "${candidate}/apt" ]] || [[ -d "${candidate}/rpm" ]] || [[ -f "${candidate}/public.gpg" ]]); then
+              pkg_root="${candidate}"
+              break
+            fi
+          done
+          if [[ -z "${pkg_root}" ]]; then
+            echo "Could not locate package artifact root under dist-packages" >&2
+            find dist-packages -maxdepth 2 -print >&2 || true
+            exit 1
+          fi
+
+          echo "PKG_ROOT=${pkg_root}" >> "$GITHUB_ENV"
           mkdir -p dist
-          find dist-packages/dist -maxdepth 1 -type f -print -exec mv -v {} dist/ \;
+          find "${pkg_root}" -maxdepth 1 -type f -print -exec mv -v {} dist/ \;
 
       - name: Import GPG signing key
         env:
@@ -438,10 +452,10 @@ jobs:
           rm -rf gh-pages-content
           mkdir -p gh-pages-content/apt gh-pages-content/rpm
 
-          cp -R dist-packages/dist/apt/dists gh-pages-content/apt/
-          cp -R dist-packages/dist/apt/pool gh-pages-content/apt/
-          cp -R dist-packages/dist/rpm/* gh-pages-content/rpm/
-          cp dist-packages/dist/public.gpg gh-pages-content/public.gpg
+          cp -R "${PKG_ROOT}/apt/dists" gh-pages-content/apt/
+          cp -R "${PKG_ROOT}/apt/pool" gh-pages-content/apt/
+          cp -R "${PKG_ROOT}/rpm/"* gh-pages-content/rpm/
+          cp dist/public.gpg gh-pages-content/public.gpg
           printf "Types: deb\nURIs: %s/apt\nSuites: stable\nComponents: main\nSigned-By: /usr/share/keyrings/debaser-archive-keyring.gpg\n" \
             "$base_url" > gh-pages-content/debaser.sources
 
