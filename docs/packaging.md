@@ -55,7 +55,7 @@ Commands (macOS):
 
 ```sh
 base64 -i ~/Desktop/release-secrets/private.gpg | pbcopy
-pbcopy < ~/Desktop/release-secrets/gpg-passphrase.txt
+tr -d '\r\n' < ~/Desktop/release-secrets/gpg-passphrase.txt | pbcopy
 ```
 
 ## crates.io publishing

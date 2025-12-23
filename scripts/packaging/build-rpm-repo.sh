@@ -82,8 +82,13 @@ if [[ "${sign}" == "true" ]]; then
   fi
 
   gpg_args=(--batch --yes --pinentry-mode loopback --armor --detach-sign)
-  if [[ -n "${GPG_PASSPHRASE:-}" ]]; then
-    gpg_args+=(--passphrase "${GPG_PASSPHRASE}")
+  passphrase="${GPG_PASSPHRASE:-}"
+  passphrase="${passphrase//$'\r'/}"
+  while [[ "${passphrase}" == *$'\n' ]]; do
+    passphrase="${passphrase%$'\n'}"
+  done
+  if [[ -n "${passphrase}" ]]; then
+    gpg_args+=(--passphrase "${passphrase}")
   fi
   if [[ -n "${gpg_key_id}" ]]; then
     gpg_args+=(-u "${gpg_key_id}")
