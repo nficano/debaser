@@ -3,7 +3,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: build-rpm-repo.sh --repo-dir <dir> --rpm <path> [--rpm <path> ...]
+Usage: build-rpm-repo.sh --repo-dir <dir> --rpm <path> [--rpm <path> ...] [--sign] [--gpg-key-id <id>]
 
 Creates a (optionally signed) YUM/DNF repository using createrepo_c.
 
@@ -13,11 +13,13 @@ Required:
 
 Optional:
   --sign      Sign repodata/repomd.xml (requires gpg)
+  --gpg-key-id  GPG key id/fingerprint to sign with (default: default key)
 EOF
 }
 
 repo_dir=""
 sign="false"
+gpg_key_id=""
 rpm_files=()
 
 while [[ $# -gt 0 ]]; do
@@ -33,6 +35,10 @@ while [[ $# -gt 0 ]]; do
     --sign)
       sign="true"
       shift 1
+      ;;
+    --gpg-key-id)
+      gpg_key_id="${2:?missing --gpg-key-id value}"
+      shift 2
       ;;
     -h|--help)
       usage
@@ -74,10 +80,18 @@ if [[ "${sign}" == "true" ]]; then
     echo "gpg not found; install with: sudo dnf install -y gnupg2 (or sudo apt-get install -y gnupg)" >&2
     exit 1
   fi
-  gpg --batch --yes --armor --detach-sign \
+
+  gpg_args=(--batch --yes --pinentry-mode loopback --armor --detach-sign)
+  if [[ -n "${GPG_PASSPHRASE:-}" ]]; then
+    gpg_args+=(--passphrase "${GPG_PASSPHRASE}")
+  fi
+  if [[ -n "${gpg_key_id}" ]]; then
+    gpg_args+=(-u "${gpg_key_id}")
+  fi
+
+  gpg "${gpg_args[@]}" \
     --output "${repo_dir}/repodata/repomd.xml.asc" \
     "${repo_dir}/repodata/repomd.xml"
 fi
 
 echo "RPM repo created at: ${repo_dir}"
-

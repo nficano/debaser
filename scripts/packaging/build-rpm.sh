@@ -47,7 +47,7 @@ echo "Building RPM for ${target_triple}..."
 cargo build --release --locked --target "${target_triple}"
 
 # cargo-generate-rpm uses the build artifacts; keep this separate so we can pass --target.
-cargo generate-rpm --release --target "${target_triple}"
+cargo generate-rpm --profile release --target "${target_triple}"
 
 rpm_path="$(find "target/${target_triple}/generate-rpm" -maxdepth 1 -type f -name '*.rpm' | head -n 1 || true)"
 if [[ -z "${rpm_path}" ]]; then
@@ -61,4 +61,3 @@ fi
 mkdir -p "${out_dir}"
 cp -v "${rpm_path}" "${out_dir}/"
 echo "Wrote: ${out_dir}/$(basename "${rpm_path}")"
-
