@@ -135,4 +135,3 @@ ManifestVersion: ${manifest_version}
 EOF
 
 echo "Wrote: ${manifest_dir}"
-
