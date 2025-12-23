@@ -24,7 +24,7 @@ pub fn generate_from_cli(cli: cli::Cli) -> Result<String> {
 /// Core entry-point for programmatic usage (tests, integrations, etc.).
 pub fn generate_from_checksum(checksum: Option<&str>) -> Result<String> {
     let sha = sha::resolve(checksum)?;
-    Ok(ReleaseNameGenerator::default().generate(&sha))
+    Ok(ReleaseNameGenerator.generate(&sha))
 }
 
 #[cfg(test)]
@@ -33,8 +33,8 @@ mod tests {
 
     #[test]
     fn generates_from_explicit_checksum() {
-        let name = generate_from_checksum(Some("abcd"))
-            .expect("checksum-based generation should succeed");
+        let name =
+            generate_from_checksum(Some("abcd")).expect("checksum-based generation should succeed");
         assert_eq!(name, "loony-lionfish");
     }
 }

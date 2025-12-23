@@ -84,7 +84,7 @@ mod tests {
 
     #[test]
     fn generator_respects_shared_initial() {
-        let generator = ReleaseNameGenerator::default();
+        let generator = ReleaseNameGenerator;
         assert!(generator.generate("0000").starts_with("airy-a"));
     }
 
