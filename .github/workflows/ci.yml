@@ -43,3 +43,135 @@ jobs:
       - name: Test
         run: cargo test --locked
 
+  propose-release:
+    name: Propose release
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Check if release needed
+        id: check
+        run: |
+          author=$(git log -1 --format='%an')
+          if [[ "$author" == "github-actions[bot]" ]]; then
+            echo "Skipping: commit authored by bot"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Rust
+        if: steps.check.outputs.skip == 'false'
+        uses: dtolnay/rust-toolchain@1.92.0
+
+      - name: Cache Rust builds
+        if: steps.check.outputs.skip == 'false'
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-semver-checks
+        if: steps.check.outputs.skip == 'false'
+        run: cargo install cargo-semver-checks
+
+      - name: Get last release tag
+        if: steps.check.outputs.skip == 'false'
+        id: last_tag
+        run: |
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if [ -z "$TAG" ]; then
+            echo "No previous tag found, treating as initial release"
+            echo "initial=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "initial=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run cargo-semver-checks
+        id: semver
+        if: steps.check.outputs.skip == 'false' && steps.last_tag.outputs.initial == 'false'
+        continue-on-error: true
+        run: |
+          cargo semver-checks check-release \
+            --baseline-rev "${{ steps.last_tag.outputs.tag }}" \
+            2>&1 | tee semver-report.txt
+
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "breaking=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "breaking=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Gather changes context
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          TAG="${{ steps.last_tag.outputs.tag }}"
+          if [ -z "$TAG" ]; then
+            REF="$(git rev-list --max-parents=0 HEAD)"
+          else
+            REF="$TAG"
+          fi
+
+          git log "$REF"..HEAD --pretty=format:"- %s" > commit-messages.txt
+          git diff "$REF"..HEAD -- '*.rs' 'Cargo.toml' > code-diff.txt
+          head -c 80000 code-diff.txt > code-diff-truncated.txt
+
+          if [ ! -f semver-report.txt ]; then
+            echo "No previous release — initial version." > semver-report.txt
+          fi
+
+      - name: AI version analysis
+        if: steps.check.outputs.skip == 'false'
+        id: ai
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_SEMVER_REVIEWER_KEY }}
+        run: |
+          python3 .github/scripts/propose_release.py \
+            --commits commit-messages.txt \
+            --diff code-diff-truncated.txt \
+            --semver-report semver-report.txt \
+            --breaking "${{ steps.semver.outputs.breaking || 'false' }}" \
+            --initial "${{ steps.last_tag.outputs.initial }}" \
+            --current-tag "${{ steps.last_tag.outputs.tag }}"
+
+          cat release-proposal.json
+
+          BUMP=$(jq -r .bump release-proposal.json)
+          NEW_VERSION=$(jq -r .new_version release-proposal.json)
+
+          if [ "$BUMP" = "none" ]; then
+            echo "No release needed"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "bump=$BUMP" >> "$GITHUB_OUTPUT"
+            echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump version in Cargo.toml
+        if: steps.check.outputs.skip == 'false' && steps.ai.outputs.skip != 'true'
+        run: |
+          python3 scripts/release/bump-version.py \
+            --set "${{ steps.ai.outputs.new_version }}"
+          cargo generate-lockfile
+
+      - name: Create or update release PR
+        if: steps.check.outputs.skip == 'false' && steps.ai.outputs.skip != 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: release/next
+          title: "release: v${{ steps.ai.outputs.new_version }}"
+          body-path: release-changelog.md
+          commit-message: "chore: bump version to ${{ steps.ai.outputs.new_version }}"
+          labels: |
+            release
+            semver:${{ steps.ai.outputs.bump }}
+          delete-branch: true
+
