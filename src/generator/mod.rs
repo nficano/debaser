@@ -77,10 +77,8 @@ fn sha_to_rng(raw: &str) -> StdRng {
             } else {
                 b'0'
             };
-            if let Ok(byte) = u8::from_str_radix(
-                std::str::from_utf8(&[hi, lo]).unwrap_or("00"),
-                16,
-            ) {
+            if let Ok(byte) = u8::from_str_radix(std::str::from_utf8(&[hi, lo]).unwrap_or("00"), 16)
+            {
                 seed[j] = byte;
             }
             i += 2;
