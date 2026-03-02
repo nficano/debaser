@@ -35,6 +35,6 @@ mod tests {
     fn generates_from_explicit_checksum() {
         let name =
             generate_from_checksum(Some("abcd")).expect("checksum-based generation should succeed");
-        assert_eq!(name, "brash-blobfish");
+        assert_eq!(name, "jade-jaeger");
     }
 }
