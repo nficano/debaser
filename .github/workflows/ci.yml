@@ -167,6 +167,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: release/next
+          add-paths: |
+            Cargo.toml
+            Cargo.lock
           title: "release: v${{ steps.ai.outputs.new_version }}"
           body-path: release-changelog.md
           commit-message: "chore: bump version to ${{ steps.ai.outputs.new_version }}"
@@ -174,4 +177,3 @@ jobs:
             release
             semver:${{ steps.ai.outputs.bump }}
           delete-branch: true
-
