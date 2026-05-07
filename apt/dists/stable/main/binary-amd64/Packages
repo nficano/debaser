@@ -1,17 +1,17 @@
 Package: debaser
-Version: 0.1.11-1
+Version: 0.1.12-1
 Architecture: amd64
 Homepage: https://github.com/nficano/debaser
 Maintainer: Nick Ficano <nficano@gmail.com>
-Installed-Size: 993
+Installed-Size: 1015
 Depends: libc6 (>= 2.39)
 Priority: optional
 Section: utils
-Filename: pool/main/d/debaser/debaser_0.1.11-1_amd64.deb
-Size: 344488
-SHA256: 389c6e9ed68b8eacb59a0acb942697fa072a23b66105a18e787dce3b483747f4
-SHA1: 2de798d3b1872f1ea02f7a7a156fb80c08e0b062
-MD5sum: 662392b79e5b084f2a126002d341bde2
+Filename: pool/main/d/debaser/debaser_0.1.12-1_amd64.deb
+Size: 350500
+SHA256: 73440e7c2ba7476c6b536905a99483fe02d07b0782f1c396bb81ce1a21228059
+SHA1: 9bf3721888f37fbea354f79e140c152860a04de0
+MD5sum: 51e077ceb88e0e04e42e8f63d804a03f
 Description: Deterministic release name generator
  <p align="center">
    <picture>
