@@ -22,8 +22,11 @@ jobs:
           archive_ext: tar.gz
           bin: debaser
 
+        # Target older glibc for compatibility with self-hosted runners
+        # that haven't moved to 24.04. Building on 22.04 links against
+        # glibc 2.35 instead of 2.39.
         - name: linux-aarch64
-          os: ubuntu-24.04-arm
+          os: ubuntu-22.04-arm
           target: aarch64-unknown-linux-gnu
           archive_ext: tar.gz
           bin: debaser
